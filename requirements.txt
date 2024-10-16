@@ -2,7 +2,7 @@ pandas
 streamlit
 duckdb
 plotly.express
-plotly.graph_objects
+plotly
 openpyxl
 openpyxl.styles
 io
