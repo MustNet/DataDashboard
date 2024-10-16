@@ -369,9 +369,7 @@ with tab3:
     if file_dashboard3 is not None:
         # Checkbox zur Bestätigung durch den Benutzer
         if st.checkbox("Bestätigen Sie die Datei für Dashboard 3"):
-            df3 = load_data()
-            st.write(df3.head())  # Zeige einen kurzen Überblick über die Daten
-            # Restliche Visualisierungen hier hinzufügen...
+            df3 = load_data(file_dashboard3)
     else:
         st.error("Die Datei für Dashboard 3 konnte nicht heruntergeladen werden.")
         
@@ -530,8 +528,6 @@ with tab4:
         # Checkbox zur Bestätigung durch den Benutzer
         if st.checkbox("Bestätigen Sie die Datei für Dashboard 4"):
             df4 = load_data(file_dashboard4)
-            st.write(df4.head())  # Zeige einen kurzen Überblick über die Daten
-            # Restliche Visualisierungen hier hinzufügen...
     else:
         st.error("Die Datei für Dashboard 4 konnte nicht heruntergeladen werden.")
 
