@@ -80,11 +80,10 @@ tab1, tab2, tab3, tab4= st.tabs(["Dashboard 1", "Dashboard 2","Dashboard 3", "Da
 
 # Inhalt des ersten Tabs
 with tab1:
-    st.subheader("Dashboard 1 - Auftragsübersicht_xlsx")
-    # Datei automatisch von URL herunterladen
-    file_dashboard1 = download_file_from_url(url_dashboard1)
-    # Datei-Upload zur Bestätigung durch den Benutzer
-    uploaded_file_1 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 1", type=["xlsx"], key="file1", value=file_dashboard1)
+    # Checkbox zur Bestätigung durch den Benutzer
+    if file_dashboard1 and st.checkbox("Bestätigen Sie die Datei für Dashboard 1"):
+        df = load_data(file_dashboard1)
+        st.write(df.head())  # Zeige einen kurzen Überblick über die Daten
 
     with st.sidebar:
         jahr_auswahl = st.selectbox("Wähle das Jahr", options=df["Jahr"].unique())
@@ -201,8 +200,10 @@ with tab2:
     # Datei automatisch von URL herunterladen
     file_dashboard2 = download_file_from_url(url_dashboard2)
 
-    # Datei-Upload zur Bestätigung durch den Benutzer
-    uploaded_file_2 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 2", type=["xlsx"], key="file2", value=file_dashboard2)
+    # Checkbox zur Bestätigung durch den Benutzer
+    if file_dashboard2 and st.checkbox("Bestätigen Sie die Datei für Dashboard 2"):
+        df2 = load_data(file_dashboard2)
+        st.write(df2.head())  # Zeige einen kurzen Überblick über die Daten
 
     # Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
     @st.cache_data
@@ -355,9 +356,11 @@ with tab3:
     # Datei automatisch von URL herunterladen
     file_dashboard3 = download_file_from_url(url_dashboard3)
 
-    # Datei-Upload zur Bestätigung durch den Benutzer
-    uploaded_file_3 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 3", type=["xlsx"], key="file3", value=file_dashboard3)
-
+    # Checkbox zur Bestätigung durch den Benutzer
+    if file_dashboard3 and st.checkbox("Bestätigen Sie die Datei für Dashboard 3"):
+        df3 = load_data(file_dashboard3)
+        st.write(df3.head())  # Zeige einen kurzen Überblick über die Daten
+        
     # Lade die Daten für Dashboard 3 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
     @st.cache_data
     def load_data_tab3(file):
@@ -509,8 +512,10 @@ with tab4:
     # Datei automatisch von URL herunterladen
     file_dashboard4 = download_file_from_url(url_dashboard4)
 
-    # Datei-Upload zur Bestätigung durch den Benutzer
-    uploaded_file_4 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 4", type=["xlsx"], key="file4", value=file_dashboard4)
+    # Checkbox zur Bestätigung durch den Benutzer
+    if file_dashboard4 and st.checkbox("Bestätigen Sie die Datei für Dashboard 4"):
+        df4 = load_data(file_dashboard4)
+        st.write(df4.head())  # Zeige einen kurzen Überblick über die Daten
 
     # Lade die Preisdaten ab der ersten Zeile (keine Zeilen überspringen)
     @st.cache_data
