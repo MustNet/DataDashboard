@@ -394,7 +394,7 @@ with tab3:
         return data
 
     # Verwende die Funktion, um die Datei für Tab 3 zu laden
-    df3 = load_data_tab3(uploaded_file_3)
+    df3 = load_data_tab3(file_dashboard3)
 
     # Extrahiere die ersten zwei Zeichen der Spalten "Quell-Platz" und "Ziel-Platz"
     df3['Quell-Bereich'] = df3['Quell-Platz'].str[:2]
@@ -553,7 +553,7 @@ with tab4:
         return df_spedition_1, df_spedition_2, df_spedition_3, df_spedition_4
 
     # Daten laden
-    df_spedition_1, df_spedition_2, df_spedition_3, df_spedition_4 = load_price_data(uploaded_file_4)
+    df_spedition_1, df_spedition_2, df_spedition_3, df_spedition_4 = load_price_data(file_dashboard3)
 
     # Entferne Eurozeichen und konvertiere Preise in numerische Werte
     df_spedition_1.iloc[:, 1:] = df_spedition_1.iloc[:, 1:].replace({'€': '', ',': '.'}, regex=True).astype(float)
