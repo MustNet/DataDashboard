@@ -78,6 +78,9 @@ def load_data(file):
 # Tabs für verschiedene Dashboards
 tab1, tab2, tab3, tab4= st.tabs(["Dashboard 1", "Dashboard 2","Dashboard 3", "Dashboard 4"])
 
+conn = duckdb.connect()
+
+
 with tab1:
     st.subheader("Dashboard 1 - Auftragsübersicht_xlsx")
 
@@ -88,7 +91,6 @@ with tab1:
         # Checkbox zur Bestätigung durch den Benutzer
         if st.checkbox("Bestätigen Sie die Datei für Dashboard 1"):
             df = load_data(file_dashboard1)
-            st.write(df.head())  # Zeige einen kurzen Überblick über die Daten
 
             # Filter für das Liniendiagramm (keine Zustandsfilterung)
             with st.sidebar:
