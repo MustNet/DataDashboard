@@ -78,12 +78,20 @@ def load_data(file):
 # Tabs für verschiedene Dashboards
 tab1, tab2, tab3, tab4= st.tabs(["Dashboard 1", "Dashboard 2","Dashboard 3", "Dashboard 4"])
 
-# Inhalt des ersten Tabs
 with tab1:
-    # Checkbox zur Bestätigung durch den Benutzer
-    if file_dashboard1 and st.checkbox("Bestätigen Sie die Datei für Dashboard 1"):
-        df = load_data(file_dashboard1)
-        st.write(df.head())  # Zeige einen kurzen Überblick über die Daten
+    st.subheader("Dashboard 1 - Auftragsübersicht_xlsx")
+
+    # Datei automatisch von URL herunterladen
+    file_dashboard1 = download_file_from_url(url_dashboard1)
+
+    if file_dashboard1 is not None:
+        # Checkbox zur Bestätigung durch den Benutzer
+        if st.checkbox("Bestätigen Sie die Datei für Dashboard 1"):
+            df = load_data(file_dashboard1)
+            st.write(df.head())  # Zeige einen kurzen Überblick über die Daten
+            # Restliche Visualisierungen hier hinzufügen...
+    else:
+        st.error("Die Datei für Dashboard 1 konnte nicht heruntergeladen werden.")
 
     with st.sidebar:
         jahr_auswahl = st.selectbox("Wähle das Jahr", options=df["Jahr"].unique())
@@ -200,10 +208,14 @@ with tab2:
     # Datei automatisch von URL herunterladen
     file_dashboard2 = download_file_from_url(url_dashboard2)
 
-    # Checkbox zur Bestätigung durch den Benutzer
-    if file_dashboard2 and st.checkbox("Bestätigen Sie die Datei für Dashboard 2"):
-        df2 = load_data(file_dashboard2)
-        st.write(df2.head())  # Zeige einen kurzen Überblick über die Daten
+    if file_dashboard2 is not None:
+        # Checkbox zur Bestätigung durch den Benutzer
+        if st.checkbox("Bestätigen Sie die Datei für Dashboard 2"):
+            df2 = load_data(file_dashboard2)
+            st.write(df2.head())  # Zeige einen kurzen Überblick über die Daten
+            # Restliche Visualisierungen hier hinzufügen...
+    else:
+        st.error("Die Datei für Dashboard 2 konnte nicht heruntergeladen werden.")
 
     # Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
     @st.cache_data
@@ -356,10 +368,14 @@ with tab3:
     # Datei automatisch von URL herunterladen
     file_dashboard3 = download_file_from_url(url_dashboard3)
 
-    # Checkbox zur Bestätigung durch den Benutzer
-    if file_dashboard3 and st.checkbox("Bestätigen Sie die Datei für Dashboard 3"):
-        df3 = load_data(file_dashboard3)
-        st.write(df3.head())  # Zeige einen kurzen Überblick über die Daten
+    if file_dashboard3 is not None:
+        # Checkbox zur Bestätigung durch den Benutzer
+        if st.checkbox("Bestätigen Sie die Datei für Dashboard 3"):
+            df3 = load_data(file_dashboard3)
+            st.write(df3.head())  # Zeige einen kurzen Überblick über die Daten
+            # Restliche Visualisierungen hier hinzufügen...
+    else:
+        st.error("Die Datei für Dashboard 3 konnte nicht heruntergeladen werden.")
         
     # Lade die Daten für Dashboard 3 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
     @st.cache_data
@@ -507,15 +523,19 @@ with tab3:
         st.dataframe(df3)
 
 with tab4:
-    st.subheader("Dashboard 4 - Preistabelle Visualisierung")
+    st.subheader("Dashboard 4 - Speditionspreise_xlsx")
 
     # Datei automatisch von URL herunterladen
     file_dashboard4 = download_file_from_url(url_dashboard4)
 
-    # Checkbox zur Bestätigung durch den Benutzer
-    if file_dashboard4 and st.checkbox("Bestätigen Sie die Datei für Dashboard 4"):
-        df4 = load_data(file_dashboard4)
-        st.write(df4.head())  # Zeige einen kurzen Überblick über die Daten
+    if file_dashboard4 is not None:
+        # Checkbox zur Bestätigung durch den Benutzer
+        if st.checkbox("Bestätigen Sie die Datei für Dashboard 4"):
+            df4 = load_data(file_dashboard4)
+            st.write(df4.head())  # Zeige einen kurzen Überblick über die Daten
+            # Restliche Visualisierungen hier hinzufügen...
+    else:
+        st.error("Die Datei für Dashboard 4 konnte nicht heruntergeladen werden.")
 
     # Lade die Preisdaten ab der ersten Zeile (keine Zeilen überspringen)
     @st.cache_data
