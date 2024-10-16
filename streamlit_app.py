@@ -217,16 +217,14 @@ if st.sidebar.button("Datei von GitHub laden"):
 
 with tab2:
 
-    # URL zur Excel-Datei im GitHub-Repository
     GITHUB_FILE_URL_2 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Fahrposition.xlsx"
-    
+
     # Funktion zum Herunterladen der Datei von GitHub
     @st.cache_data
     def download_file(url):
-        file_bytes = pd.read_excel(url)
-        return file_bytes
+        return pd.read_excel(url)
     
-    # Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
+    # Funktion zum Laden der Daten in Tab2
     @st.cache_data
     def load_data_tab2(file):
         # Verwende "converters", um sicherzustellen, dass die Pers.-Nr. als String eingelesen wird
@@ -246,11 +244,15 @@ with tab2:
         st.subheader("Dashboard 2 - Fahrpositionen_xlsx")
         
         # Download der Datei von GitHub
-        file_bytes = download_file(GITHUB_FILE_URL_2)
+        try:
+            file_bytes = download_file(GITHUB_FILE_URL_2)
+        except Exception as e:
+            st.error(f"Fehler beim Laden der Datei: {str(e)}")
+            st.stop()
         
-        if file_bytes:
+        if file_bytes is not None:
             # Benutzer muss bestätigen, ob die Datei richtig ist
-            uploaded_file_2 = st.sidebar.file_uploader("Bestätigen Sie die Daten für Dashboard 2", key="file2")
+            uploaded_file_2 = st.sidebar.file_uploader("Bestätigen Sie die Daten für Dashboard 2", key="file2", type=["xlsx"])
     
             if uploaded_file_2:
                 # Datei laden und verarbeiten
