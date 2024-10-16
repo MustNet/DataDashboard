@@ -392,7 +392,7 @@ with tab3:
         return data
 
     # Verwende die Funktion, um die Datei für Tab 3 zu laden
-    df3 = load_data_tab3()
+    df3 = load_data_tab3(file_dashboard3)
 
     # Extrahiere die ersten zwei Zeichen der Spalten "Quell-Platz" und "Ziel-Platz"
     df3['Quell-Bereich'] = df3['Quell-Platz'].str[:2]
