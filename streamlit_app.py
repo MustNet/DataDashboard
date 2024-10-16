@@ -341,6 +341,8 @@ with tab2:
                     st.dataframe(df2)
 
 # Tab 3: Dashboard 3 - Weitere Visualisierungen
+with tab3:
+    
     # URL zur Excel-Datei im GitHub-Repository
     GITHUB_FILE_URL_3 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Transporte.xlsx"
     
