@@ -88,29 +88,29 @@ with tab1:
         # Checkbox zur Bestätigung durch den Benutzer
         if st.checkbox("Bestätigen Sie die Datei für Dashboard 1"):
             df = load_data(file_dashboard1)
-    else:
-        st.error("Die Datei für Dashboard 1 konnte nicht heruntergeladen werden.")
+            st.write(df.head())  # Zeige einen kurzen Überblick über die Daten
 
+            # Filter für das Liniendiagramm (keine Zustandsfilterung)
             with st.sidebar:
                 jahr_auswahl = st.selectbox("Wähle das Jahr", options=df["Jahr"].unique())
                 monate_dict = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 
                                'Jul': '07', 'Aug': '08', 'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12'}
                 vorhandene_monate = sorted(df["Monat"].unique(), key=lambda x: monate_dict[x])
                 monat_auswahl = st.selectbox("Wähle den Monat", options=vorhandene_monate)
-        
+
             # 1. Gestapeltes Balkendiagramm: Anzahl der Zustände pro Tag im Monat
             df_balken = df[(df['Jahr'] == jahr_auswahl) & (df['Monat'] == monat_auswahl)]
             df_balken_grouped = df_balken.groupby(['Zustand', 'Liefer-Dat.']).size().reset_index(name='Anzahl')
-        
+
             # 2. Gestapeltes Balkendiagramm: Anzahl der Zustände pro Monat im Jahr
             df_balken_jahr = df[df['Jahr'] == jahr_auswahl]
             df_balken_jahr_grouped = df_balken_jahr.groupby(['Zustand', 'Monat', 'Monat_Zahl']).size().reset_index(name='Anzahl')
-        
+
             # Sortiere nach Monat_Zahl, um sicherzustellen, dass die Monate korrekt angeordnet sind
             df_balken_jahr_grouped = df_balken_jahr_grouped.sort_values('Monat_Zahl')
-        
+
             col1, col2 = st.columns(2)
-        
+
             with col1:
                 st.subheader(f"Anzahl der Zustände pro Tag im {monat_auswahl} {jahr_auswahl}")
                 fig_balken = px.bar(
@@ -124,7 +124,7 @@ with tab1:
                 )
                 fig_balken.update_layout(xaxis_tickangle=-45, width=800, height=500)
                 st.plotly_chart(fig_balken)
-        
+
             with col2:
                 st.subheader(f"Anzahl der Zustände pro Monat im Jahr {jahr_auswahl}")
                 fig_balken_jahr = px.bar(
@@ -139,10 +139,10 @@ with tab1:
                 )
                 fig_balken_jahr.update_layout(width=800, height=500)
                 st.plotly_chart(fig_balken_jahr)
-        
+
             # Setze das Liniendiagramm neben das zweite Diagramm
             col3, col4 = st.columns(2)
-        
+
             with col3:
                 st.subheader(f"Anzahl der Aufträge pro Monat über alle Jahre (Gesamtanzahl)")
                 query_3 = f"""
@@ -157,17 +157,17 @@ with tab1:
                 """
                 jahre_daten = conn.execute(query_3).df()
                 jahre_daten['Monat_Zahl'] = jahre_daten['Monat_Zahl'].astype(int)
-        
+
                 monate = pd.DataFrame({
                     'Monat_Zahl': range(1, 13),
                     'Monat': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                 })
                 jahre_daten = jahre_daten.merge(monate, on='Monat_Zahl', how='right').fillna({'Anzahl_Aufträge': 0})
-        
+
                 jahre_daten['Monat'] = jahre_daten['Monat_x']
                 jahre_daten = jahre_daten.drop(columns=['Monat_x', 'Monat_y'])
                 jahre_daten = jahre_daten.sort_values('Monat_Zahl')
-        
+
                 fig_jahre = px.line(
                     jahre_daten, 
                     x='Monat', 
@@ -179,12 +179,12 @@ with tab1:
                 )
                 fig_jahre.update_layout(width=800, height=500)
                 st.plotly_chart(fig_jahre)
-        
+
             with col4:
                 st.subheader(f"Aufträge nach Zuständen im {jahr_auswahl}")
                 df_pie = df[df['Jahr'] == jahr_auswahl]
                 df_pie_grouped = df_pie.groupby('Zustand').size().reset_index(name='Anzahl')
-        
+
                 fig_pie = px.pie(
                     df_pie_grouped,
                     names='Zustand',
@@ -195,10 +195,14 @@ with tab1:
                 )
                 fig_pie.update_layout(width=800, height=500)
                 st.plotly_chart(fig_pie)
-        
-                # Füge den Data Previewer wieder ein (optional)
+
+            # Füge den Data Previewer wieder ein (optional)
             with st.expander("Data Preview"):
                 st.dataframe(df)
+
+    else:
+        st.error("Die Datei für Dashboard 1 konnte nicht heruntergeladen werden.")
+
 
 with tab2:
     st.subheader("Dashboard 2 - Fahrpositionen_xlsx")
