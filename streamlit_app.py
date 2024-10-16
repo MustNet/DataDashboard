@@ -366,7 +366,7 @@ with tab3:
     # Datei automatisch von URL herunterladen
     file_dashboard3 = download_file_from_url(url_dashboard3)
 
-    if  is not None:
+    if file_dashboard3 is not None:
         # Checkbox zur Bestätigung durch den Benutzer
         if st.checkbox("Bestätigen Sie die Datei für Dashboard 3"):
             df3 = load_data()
