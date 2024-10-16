@@ -4,6 +4,7 @@ import duckdb
 import plotly.express as px
 import plotly.graph_objects as go
 import openpyxl
+import requests
 from openpyxl.styles import PatternFill
 from io import BytesIO
 
