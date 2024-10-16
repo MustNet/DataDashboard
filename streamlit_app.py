@@ -364,12 +364,12 @@ with tab3:
     st.subheader("Dashboard 3 - Transporte_xlsx")
 
     # Datei automatisch von URL herunterladen
-    file_dashboard3 = download_file_from_url(url_dashboard3)
+     = download_file_from_url(url_dashboard3)
 
-    if file_dashboard3 is not None:
+    if  is not None:
         # Checkbox zur Bestätigung durch den Benutzer
         if st.checkbox("Bestätigen Sie die Datei für Dashboard 3"):
-            df3 = load_data(file_dashboard3)
+            df3 = load_data()
             st.write(df3.head())  # Zeige einen kurzen Überblick über die Daten
             # Restliche Visualisierungen hier hinzufügen...
     else:
@@ -394,7 +394,7 @@ with tab3:
         return data
 
     # Verwende die Funktion, um die Datei für Tab 3 zu laden
-    df3 = load_data_tab3(file_dashboard3)
+    df3 = load_data_tab3()
 
     # Extrahiere die ersten zwei Zeichen der Spalten "Quell-Platz" und "Ziel-Platz"
     df3['Quell-Bereich'] = df3['Quell-Platz'].str[:2]
@@ -553,7 +553,7 @@ with tab4:
         return df_spedition_1, df_spedition_2, df_spedition_3, df_spedition_4
 
     # Daten laden
-    df_spedition_1, df_spedition_2, df_spedition_3, df_spedition_4 = load_price_data(file_dashboard3)
+    df_spedition_1, df_spedition_2, df_spedition_3, df_spedition_4 = load_price_data(file_dashboard4)
 
     # Entferne Eurozeichen und konvertiere Preise in numerische Werte
     df_spedition_1.iloc[:, 1:] = df_spedition_1.iloc[:, 1:].replace({'€': '', ',': '.'}, regex=True).astype(float)
