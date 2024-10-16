@@ -217,126 +217,126 @@ if st.sidebar.button("Datei von GitHub laden"):
 
 with tab2:
 
-# URL zur Excel-Datei im GitHub-Repository
-GITHUB_FILE_URL_2 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Fahrposition.xlsx"
-
-# Funktion zum Herunterladen der Datei von GitHub
-@st.cache_data
-def download_file(url):
-    file_bytes = pd.read_excel(url)
-    return file_bytes
-
-# Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
-@st.cache_data
-def load_data_tab2(file):
-    # Verwende "converters", um sicherzustellen, dass die Pers.-Nr. als String eingelesen wird
-    converters = {
-        "Pers.-Nr.": lambda x: str(x).zfill(4),  # Konvertiere die Pers.-Nr. in einen 4-stelligen String
-        "Auftrags-Nr.": lambda x: str(x).zfill(5),        
-    }
-    data = pd.read_excel(file, converters=converters)
-    data.columns = data.columns.str.strip()  # Entferne führende/nachfolgende Leerzeichen von allen Spaltennamen
-    data['Ende Datum'] = pd.to_datetime(data['Ende Datum'], errors='coerce')  # Konvertiere "Ende Datum"
-    data['Beginn Zeit'] = pd.to_datetime(data['Beginn Zeit'], errors='coerce')  # Konvertiere "Beginn Zeit"
-    data['Ende Zeit'] = pd.to_datetime(data['Ende Zeit'], errors='coerce')  # Konvertiere "Ende Zeit"
-    return data
-
-# Benutzer-Oberfläche für Tab 2
-with st.container():
-    st.subheader("Dashboard 2 - Fahrpositionen_xlsx")
+    # URL zur Excel-Datei im GitHub-Repository
+    GITHUB_FILE_URL_2 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Fahrposition.xlsx"
     
-    # Download der Datei von GitHub
-    file_bytes = download_file(GITHUB_FILE_URL_2)
+    # Funktion zum Herunterladen der Datei von GitHub
+    @st.cache_data
+    def download_file(url):
+        file_bytes = pd.read_excel(url)
+        return file_bytes
     
-    if file_bytes:
-        # Benutzer muss bestätigen, ob die Datei richtig ist
-        uploaded_file_2 = st.sidebar.file_uploader("Bestätigen Sie die Daten für Dashboard 2", key="file2")
-
-        if uploaded_file_2:
-            # Datei laden und verarbeiten
-            df2 = load_data_tab2(uploaded_file_2)
-
-            # Berechnung der Anzahl der "Gesamtpicks" und des "Gesamtgewichts" pro Personalnummer
-            df2_grouped = df2.groupby('Pers.-Nr.').agg({
-                'Anzahl Picks': 'sum',  # Summe der Picks pro Personalnummer
-                'Gewicht': 'sum'  # Summe des Gewichts pro Personalnummer
-            }).reset_index()
-
-            # Neue Spalte mit dem Format "Personal + Personalnummer" hinzufügen
-            df2_grouped['Personal'] = df2_grouped['Pers.-Nr.'].apply(lambda x: f"Personal {x}")
-
-            # Setze drei Diagramme/Metriken nebeneinander
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                # Erstelle ein Balkendiagramm, das beide Metriken zeigt und die neue Personal-Spalte nutzt
-                fig_balken = px.bar(
-                    df2_grouped,
-                    x='Personal',  # Nutze die neue Spalte 'Personal'
-                    y=['Gewicht', 'Anzahl Picks'],  # Zeige beide Metriken nebeneinander
-                    labels={'variable': 'Metrik', 'value': 'Wert', 'Personal': 'Personal'},
-                    title="Vergleich von Gesamtgewicht und Anzahl der Picks pro Personal",
-                    barmode='group'  # Nebeneinanderliegende Balken
-                )
-                fig_balken.update_layout(width=800, height=500)
-                st.plotly_chart(fig_balken)
-
-            with col2:
-                # Extrahiere das Jahr aus der Spalte "Ende Datum"
-                df2['Jahr'] = df2['Ende Datum'].dt.year
-
-                # Berechnung des Gesamtgewichts pro Jahr
-                df2_jahr_grouped = df2.groupby('Jahr').agg({
-                    'Gewicht': 'sum'  # Summe des Gewichts pro Jahr
+    # Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
+    @st.cache_data
+    def load_data_tab2(file):
+        # Verwende "converters", um sicherzustellen, dass die Pers.-Nr. als String eingelesen wird
+        converters = {
+            "Pers.-Nr.": lambda x: str(x).zfill(4),  # Konvertiere die Pers.-Nr. in einen 4-stelligen String
+            "Auftrags-Nr.": lambda x: str(x).zfill(5),        
+        }
+        data = pd.read_excel(file, converters=converters)
+        data.columns = data.columns.str.strip()  # Entferne führende/nachfolgende Leerzeichen von allen Spaltennamen
+        data['Ende Datum'] = pd.to_datetime(data['Ende Datum'], errors='coerce')  # Konvertiere "Ende Datum"
+        data['Beginn Zeit'] = pd.to_datetime(data['Beginn Zeit'], errors='coerce')  # Konvertiere "Beginn Zeit"
+        data['Ende Zeit'] = pd.to_datetime(data['Ende Zeit'], errors='coerce')  # Konvertiere "Ende Zeit"
+        return data
+    
+    # Benutzer-Oberfläche für Tab 2
+    with st.container():
+        st.subheader("Dashboard 2 - Fahrpositionen_xlsx")
+        
+        # Download der Datei von GitHub
+        file_bytes = download_file(GITHUB_FILE_URL_2)
+        
+        if file_bytes:
+            # Benutzer muss bestätigen, ob die Datei richtig ist
+            uploaded_file_2 = st.sidebar.file_uploader("Bestätigen Sie die Daten für Dashboard 2", key="file2")
+    
+            if uploaded_file_2:
+                # Datei laden und verarbeiten
+                df2 = load_data_tab2(uploaded_file_2)
+    
+                # Berechnung der Anzahl der "Gesamtpicks" und des "Gesamtgewichts" pro Personalnummer
+                df2_grouped = df2.groupby('Pers.-Nr.').agg({
+                    'Anzahl Picks': 'sum',  # Summe der Picks pro Personalnummer
+                    'Gewicht': 'sum'  # Summe des Gewichts pro Personalnummer
                 }).reset_index()
-
-                # Erstelle ein Kreisdiagramm für das Gesamtgewicht pro Jahr
-                fig_pie = px.pie(
-                    df2_jahr_grouped,
-                    names='Jahr',
-                    values='Gewicht',
-                    title="Gesamtgewicht pro Jahr"
-                )
-                fig_pie.update_layout(width=800, height=500)
-                st.plotly_chart(fig_pie)
-
-            # Berechnung weiterer Kennzahlen
-            gesamt_auftraege = df2['Auftrags-Nr.'].nunique()
-            gesamt_gewicht = df2['Gewicht'].sum()
-            durchschnitt_gewicht = gesamt_gewicht / gesamt_auftraege if gesamt_auftraege > 0 else 0
-            df2['Dauer'] = (df2['Ende Zeit'] - df2['Beginn Zeit']).dt.total_seconds() / 60
-            gesamt_dauer = df2['Dauer'].sum()
-            durchschnitt_dauer = gesamt_dauer / gesamt_auftraege if gesamt_auftraege > 0 else 0
-
-            with col3:
-                st.subheader("Wichtige Kennzahlen")
-                metric_col1, metric_col2, metric_col3 = st.columns(3)
-                metric_col1.metric(label="Gesamtanzahl der Aufträge", value=f"{gesamt_auftraege}")
-                metric_col2.metric(label="Durchschnittsgewicht pro Auftrag", value=f"{durchschnitt_gewicht:.2f} kg")
-                metric_col3.metric(label="Durchschnittszeit pro Auftrag", value=f"{durchschnitt_dauer:.2f} Minuten")
-
-                # Liniendiagramm zur Entwicklung des Gewichts über die Jahre hinweg
-                df2['Monat'] = df2['Ende Datum'].dt.strftime('%b')
-                df2['Monat_Zahl'] = df2['Ende Datum'].dt.month
-                df2_monate_grouped = df2.groupby(['Jahr', 'Monat', 'Monat_Zahl']).agg({
-                    'Gewicht': lambda x: x.sum() / 1000  # Summe des Gewichts in Tonnen
-                }).reset_index()
-                df2_monate_grouped = df2_monate_grouped.sort_values('Monat_Zahl')
-
-                fig_line = px.line(
-                    df2_monate_grouped,
-                    x='Monat',
-                    y='Gewicht',
-                    color='Jahr',
-                    title="Entwicklung des Gewichts über die Monate hinweg",
-                    labels={'Monat': 'Monat', 'Gewicht': 'Gesamtgewicht', 'Jahr': 'Jahr'}
-                )
-                fig_line.update_layout(width=800, height=500)
-                st.plotly_chart(fig_line)
-
-            # Zeige den Data Preview für Tab 2 an
-            with st.expander("Data Preview für Dashboard 2"):
-                st.dataframe(df2)
+    
+                # Neue Spalte mit dem Format "Personal + Personalnummer" hinzufügen
+                df2_grouped['Personal'] = df2_grouped['Pers.-Nr.'].apply(lambda x: f"Personal {x}")
+    
+                # Setze drei Diagramme/Metriken nebeneinander
+                col1, col2, col3 = st.columns(3)
+    
+                with col1:
+                    # Erstelle ein Balkendiagramm, das beide Metriken zeigt und die neue Personal-Spalte nutzt
+                    fig_balken = px.bar(
+                        df2_grouped,
+                        x='Personal',  # Nutze die neue Spalte 'Personal'
+                        y=['Gewicht', 'Anzahl Picks'],  # Zeige beide Metriken nebeneinander
+                        labels={'variable': 'Metrik', 'value': 'Wert', 'Personal': 'Personal'},
+                        title="Vergleich von Gesamtgewicht und Anzahl der Picks pro Personal",
+                        barmode='group'  # Nebeneinanderliegende Balken
+                    )
+                    fig_balken.update_layout(width=800, height=500)
+                    st.plotly_chart(fig_balken)
+    
+                with col2:
+                    # Extrahiere das Jahr aus der Spalte "Ende Datum"
+                    df2['Jahr'] = df2['Ende Datum'].dt.year
+    
+                    # Berechnung des Gesamtgewichts pro Jahr
+                    df2_jahr_grouped = df2.groupby('Jahr').agg({
+                        'Gewicht': 'sum'  # Summe des Gewichts pro Jahr
+                    }).reset_index()
+    
+                    # Erstelle ein Kreisdiagramm für das Gesamtgewicht pro Jahr
+                    fig_pie = px.pie(
+                        df2_jahr_grouped,
+                        names='Jahr',
+                        values='Gewicht',
+                        title="Gesamtgewicht pro Jahr"
+                    )
+                    fig_pie.update_layout(width=800, height=500)
+                    st.plotly_chart(fig_pie)
+    
+                # Berechnung weiterer Kennzahlen
+                gesamt_auftraege = df2['Auftrags-Nr.'].nunique()
+                gesamt_gewicht = df2['Gewicht'].sum()
+                durchschnitt_gewicht = gesamt_gewicht / gesamt_auftraege if gesamt_auftraege > 0 else 0
+                df2['Dauer'] = (df2['Ende Zeit'] - df2['Beginn Zeit']).dt.total_seconds() / 60
+                gesamt_dauer = df2['Dauer'].sum()
+                durchschnitt_dauer = gesamt_dauer / gesamt_auftraege if gesamt_auftraege > 0 else 0
+    
+                with col3:
+                    st.subheader("Wichtige Kennzahlen")
+                    metric_col1, metric_col2, metric_col3 = st.columns(3)
+                    metric_col1.metric(label="Gesamtanzahl der Aufträge", value=f"{gesamt_auftraege}")
+                    metric_col2.metric(label="Durchschnittsgewicht pro Auftrag", value=f"{durchschnitt_gewicht:.2f} kg")
+                    metric_col3.metric(label="Durchschnittszeit pro Auftrag", value=f"{durchschnitt_dauer:.2f} Minuten")
+    
+                    # Liniendiagramm zur Entwicklung des Gewichts über die Jahre hinweg
+                    df2['Monat'] = df2['Ende Datum'].dt.strftime('%b')
+                    df2['Monat_Zahl'] = df2['Ende Datum'].dt.month
+                    df2_monate_grouped = df2.groupby(['Jahr', 'Monat', 'Monat_Zahl']).agg({
+                        'Gewicht': lambda x: x.sum() / 1000  # Summe des Gewichts in Tonnen
+                    }).reset_index()
+                    df2_monate_grouped = df2_monate_grouped.sort_values('Monat_Zahl')
+    
+                    fig_line = px.line(
+                        df2_monate_grouped,
+                        x='Monat',
+                        y='Gewicht',
+                        color='Jahr',
+                        title="Entwicklung des Gewichts über die Monate hinweg",
+                        labels={'Monat': 'Monat', 'Gewicht': 'Gesamtgewicht', 'Jahr': 'Jahr'}
+                    )
+                    fig_line.update_layout(width=800, height=500)
+                    st.plotly_chart(fig_line)
+    
+                # Zeige den Data Preview für Tab 2 an
+                with st.expander("Data Preview für Dashboard 2"):
+                    st.dataframe(df2)
 
 # Tab 3: Dashboard 3 - Weitere Visualisierungen
 with tab3:
