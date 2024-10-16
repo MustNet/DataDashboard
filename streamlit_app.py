@@ -98,8 +98,8 @@ if st.sidebar.button("Datei von GitHub laden"):
         # DuckDB SQL-Integration
         conn = duckdb.connect()
         
-        # Tabs für verschiedene Dashboards
-        tab1, tab2, tab3, tab4 = st.tabs(["Dashboard 1", "Dashboard 2", "Dashboard 3", "Dashboard 4"])
+# Tabs für verschiedene Dashboards
+tab1, tab2, tab3, tab4 = st.tabs(["Dashboard 1", "Dashboard 2", "Dashboard 3", "Dashboard 4"])
 
         # Inhalt des ersten Tabs
         with tab1:
