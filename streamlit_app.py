@@ -594,7 +594,7 @@ with tab4:
         df_bestpreis.to_excel(writer, index=False, sheet_name='Bestpreisliste')
 
         # Speichere den Writer
-        writer.save()
+        writer.close()
 
         # Lade die erstellte Excel-Datei
         output.seek(0)
