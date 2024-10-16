@@ -341,161 +341,137 @@ with tab2:
                     st.dataframe(df2)
 
 # Tab 3: Dashboard 3 - Weitere Visualisierungen
-with tab3:
-    st.subheader("Dashboard 3 - Transporte_xlsx")
-
-    # File Uploader für Dashboard 3
-    uploaded_file_3 = st.file_uploader("Wähle eine Datei für Dashboard 3", key="file3")
-
-    if uploaded_file_3 is None:
-        st.info("Lade eine Datei für Dashboard 3 hoch")
-        st.stop()
-
-    # Lade die Daten für Dashboard 3 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
+    # URL zur Excel-Datei im GitHub-Repository
+    GITHUB_FILE_URL_3 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Transporte.xlsx"
+    
+    # Funktion zum Herunterladen der Datei von GitHub
+    @st.cache_data
+    def download_file(url):
+        return pd.read_excel(url)
+    
+    # Funktion zum Laden der Daten in Tab3
     @st.cache_data
     def load_data_tab3(file):
         # Excel-Datei laden
         data = pd.read_excel(file)
-        
+    
         # Entferne führende und nachfolgende Leerzeichen von allen Spaltennamen
         data.columns = data.columns.str.strip()
-
+    
         # Konvertiere die Spalten "Fahrbeginn Zeit" und "Ende Zeit" in Zeitformat für die Berechnung der Zeitdifferenzen
         data['Fahrbeginn Zeit'] = pd.to_datetime(data['Fahrbeginn Zeit'], errors='coerce')
         data['Ende Zeit'] = pd.to_datetime(data['Ende Zeit'], errors='coerce')
-
+    
         # Filtere Zeilen ohne gültige Zeitwerte
         data = data.dropna(subset=['Fahrbeginn Zeit', 'Ende Zeit'])
-
+    
         return data
-
-    # Verwende die Funktion, um die Datei für Tab 3 zu laden
-    df3 = load_data_tab3(uploaded_file_3)
-
-    # Extrahiere die ersten zwei Zeichen der Spalten "Quell-Platz" und "Ziel-Platz"
-    df3['Quell-Bereich'] = df3['Quell-Platz'].str[:2]
-    df3['Ziel-Bereich'] = df3['Ziel-Platz'].str[:2]
-
-    # Filtere Ziel-Bereiche und Quell-Bereiche aus, die '00' enthalten
-    df3 = df3[df3['Ziel-Bereich'] != '00']
-    df3 = df3[df3['Quell-Bereich'] != '00']
-
-    # Setze zwei Diagramme nebeneinander
-    col1, col2 = st.columns(2)
-
-    # Balkendiagramm für Ziel-Bereiche in col1
-    with col1:
-        # Zähle die Anzahl der Transporte pro Zielbereich
-        df3_grouped = df3.groupby('Ziel-Bereich').size().reset_index(name='Anzahl Transporte')
-
-        # Einzigartige Ziel-Bereiche erfassen
-        unique_ziel_bereiche = df3_grouped['Ziel-Bereich'].unique()
-
-        # Sortiere die Ziel-Bereiche nach der Bedingung WE -> numerisch -> WA
-        sorted_ziel_bereiche = ['WE'] + sorted(
-            [bereich for bereich in unique_ziel_bereiche if bereich not in ['WE', 'WA']],
-            key=lambda x: int(x) if x.isdigit() else float('inf')
-        ) + ['WA']
-
-        # Wandle Ziel-Bereich in eine kategorische Spalte mit der festgelegten Reihenfolge
-        df3_grouped['Ziel-Bereich'] = pd.Categorical(
-            df3_grouped['Ziel-Bereich'], 
-            categories=sorted_ziel_bereiche,
-            ordered=True
-        )
-
-        # Füge "Bereich" vor die Zielbereiche hinzu, außer bei "WE" und "WA"
-        df3_grouped['Ziel-Bereich'] = df3_grouped['Ziel-Bereich'].apply(lambda x: f"Bereich {x}" if x not in ['WE', 'WA'] else x)
-
-        # Sortiere das DataFrame entsprechend der definierten Kategorie-Reihenfolge
-        df3_grouped = df3_grouped.sort_values('Ziel-Bereich')
-
-        # Erstelle ein Balkendiagramm für Ziel-Bereiche
-        fig_balken = px.bar(
-            df3_grouped,
-            x='Ziel-Bereich',
-            y='Anzahl Transporte',
-            labels={'Ziel-Bereich': 'Ziel-Bereich', 'Anzahl Transporte': 'Anzahl der Transporte'},
-            title="Anzahl der Transporte pro Zielbereich"
-        )
-
-        # Größe des Diagramms anpassen
-        fig_balken.update_layout(width=800, height=500)
-
-        # Zeige das Balkendiagramm an
-        st.plotly_chart(fig_balken)
-
-    # Balkendiagramm für Quell-Bereiche in col2
-    with col2:
-        # Zähle die Anzahl der Transporte pro Quellbereich
-        df3_quell_grouped = df3.groupby('Quell-Bereich').size().reset_index(name='Anzahl Transporte')
-
-        # Einzigartige Quell-Bereiche erfassen
-        unique_quell_bereiche = df3_quell_grouped['Quell-Bereich'].unique()
-
-        # Sortiere die Quell-Bereiche nach der Bedingung WE -> numerisch -> WA
-        sorted_quell_bereiche = ['WE'] + sorted(
-            [bereich for bereich in unique_quell_bereiche if bereich not in ['WE', 'WA']],
-            key=lambda x: int(x) if x.isdigit() else float('inf')
-        ) + ['WA']
-
-        # Wandle Quell-Bereich in eine kategorische Spalte mit der festgelegten Reihenfolge
-        df3_quell_grouped['Quell-Bereich'] = pd.Categorical(
-            df3_quell_grouped['Quell-Bereich'], 
-            categories=sorted_quell_bereiche,
-            ordered=True
-        )
-
-        # Füge "Bereich" vor die Quellbereiche hinzu, außer bei "WE" und "WA"
-        df3_quell_grouped['Quell-Bereich'] = df3_quell_grouped['Quell-Bereich'].apply(lambda x: f"Bereich {x}" if x not in ['WE', 'WA'] else x)
-
-        # Sortiere das DataFrame entsprechend der definierten Kategorie-Reihenfolge
-        df3_quell_grouped = df3_quell_grouped.sort_values('Quell-Bereich')
-
-        # Erstelle ein Balkendiagramm für Quell-Bereiche
-        fig_balken_quell = px.bar(
-            df3_quell_grouped,
-            x='Quell-Bereich',
-            y='Anzahl Transporte',
-            labels={'Quell-Bereich': 'Quell-Bereich', 'Anzahl Transporte': 'Anzahl der Transporte'},
-            title="Anzahl der Transporte pro Quellbereich"
-        )
-
-        # Größe des Diagramms anpassen
-        fig_balken_quell.update_layout(width=800, height=500)
-
-        # Zeige das Balkendiagramm an
-        st.plotly_chart(fig_balken_quell)
-
-    # Eckdaten als Labels unter den Diagrammen
-    st.subheader("Wichtige Kennzahlen")
-
-    # Berechnung der Gesamtanzahl der Transporte
-    gesamt_transporte = df3.shape[0]
-
-    # Berechnung der Transportdauer in Minuten (Differenz zwischen "Fahrbeginn Zeit" und "Ende Zeit")
-    df3['Transportdauer'] = (df3['Ende Zeit'] - df3['Fahrbeginn Zeit']).dt.total_seconds() / 60
-
-    # Berechne die gesamte Transportdauer (Summe aller Transportdauern)
-    gesamt_transportdauer = df3['Transportdauer'].sum()
-
-    # Berechne die durchschnittliche Transportdauer (Gesamtdauer geteilt durch die Anzahl der Aufträge) und füge 4 Minuten hinzu
-    durchschnitt_dauer = (gesamt_transporte/ gesamt_transportdauer)
-
-    # Berechnung des Gesamtgewichts in Kilogramm
-    gesamt_gewicht = df3['Gewicht'].sum()
-
-    # Zeige die Kennzahlen als Labels an
-    col3, col4, col5 = st.columns(3)
-
-    col3.metric(label="Gesamtanzahl der Transporte", value=f"{gesamt_transporte}")
-    col4.metric(label="Durchschnittliche Transportdauer", value=f"{durchschnitt_dauer:.2f} Minuten")
-    col5.metric(label="Gesamtgewicht transportiert", value=f"{gesamt_gewicht:.2f} kg")
-
-    # Zeige den Data Preview für Tab 3 an
-    with st.expander("Data Preview für Dashboard 3"):
-        st.dataframe(df3)
-
+    
+    # Benutzer-Oberfläche für Tab 3
+    with st.container():
+        st.subheader("Dashboard 3 - Transporte_xlsx")
+        
+        # Download der Datei von GitHub
+        try:
+            file_bytes = download_file(GITHUB_FILE_URL_3)
+        except Exception as e:
+            st.error(f"Fehler beim Laden der Datei: {str(e)}")
+            st.stop()
+        
+        if file_bytes is not None:
+            # Benutzer muss bestätigen, ob die Datei richtig ist
+            uploaded_file_3 = st.sidebar.file_uploader("Bestätigen Sie die Daten für Dashboard 3", key="file3", type=["xlsx"])
+    
+            if uploaded_file_3:
+                # Datei laden und verarbeiten
+                df3 = load_data_tab3(uploaded_file_3)
+    
+                # Extrahiere die ersten zwei Zeichen der Spalten "Quell-Platz" und "Ziel-Platz"
+                df3['Quell-Bereich'] = df3['Quell-Platz'].str[:2]
+                df3['Ziel-Bereich'] = df3['Ziel-Platz'].str[:2]
+    
+                # Filtere Ziel-Bereiche und Quell-Bereiche aus, die '00' enthalten
+                df3 = df3[df3['Ziel-Bereich'] != '00']
+                df3 = df3[df3['Quell-Bereich'] != '00']
+    
+                # Setze zwei Diagramme nebeneinander
+                col1, col2 = st.columns(2)
+    
+                # Balkendiagramm für Ziel-Bereiche in col1
+                with col1:
+                    df3_grouped = df3.groupby('Ziel-Bereich').size().reset_index(name='Anzahl Transporte')
+                    unique_ziel_bereiche = df3_grouped['Ziel-Bereich'].unique()
+    
+                    # Sortiere die Ziel-Bereiche nach der Bedingung WE -> numerisch -> WA
+                    sorted_ziel_bereiche = ['WE'] + sorted(
+                        [bereich for bereich in unique_ziel_bereiche if bereich not in ['WE', 'WA']],
+                        key=lambda x: int(x) if x.isdigit() else float('inf')
+                    ) + ['WA']
+    
+                    df3_grouped['Ziel-Bereich'] = pd.Categorical(
+                        df3_grouped['Ziel-Bereich'], 
+                        categories=sorted_ziel_bereiche,
+                        ordered=True
+                    )
+    
+                    df3_grouped['Ziel-Bereich'] = df3_grouped['Ziel-Bereich'].apply(lambda x: f"Bereich {x}" if x not in ['WE', 'WA'] else x)
+                    df3_grouped = df3_grouped.sort_values('Ziel-Bereich')
+    
+                    fig_balken = px.bar(
+                        df3_grouped,
+                        x='Ziel-Bereich',
+                        y='Anzahl Transporte',
+                        labels={'Ziel-Bereich': 'Ziel-Bereich', 'Anzahl Transporte': 'Anzahl der Transporte'},
+                        title="Anzahl der Transporte pro Zielbereich"
+                    )
+                    fig_balken.update_layout(width=800, height=500)
+                    st.plotly_chart(fig_balken)
+    
+                # Balkendiagramm für Quell-Bereiche in col2
+                with col2:
+                    df3_quell_grouped = df3.groupby('Quell-Bereich').size().reset_index(name='Anzahl Transporte')
+                    unique_quell_bereiche = df3_quell_grouped['Quell-Bereich'].unique()
+    
+                    sorted_quell_bereiche = ['WE'] + sorted(
+                        [bereich for bereich in unique_quell_bereiche if bereich not in ['WE', 'WA']],
+                        key=lambda x: int(x) if x.isdigit() else float('inf')
+                    ) + ['WA']
+    
+                    df3_quell_grouped['Quell-Bereich'] = pd.Categorical(
+                        df3_quell_grouped['Quell-Bereich'], 
+                        categories=sorted_quell_bereiche,
+                        ordered=True
+                    )
+    
+                    df3_quell_grouped['Quell-Bereich'] = df3_quell_grouped['Quell-Bereich'].apply(lambda x: f"Bereich {x}" if x not in ['WE', 'WA'] else x)
+                    df3_quell_grouped = df3_quell_grouped.sort_values('Quell-Bereich')
+    
+                    fig_balken_quell = px.bar(
+                        df3_quell_grouped,
+                        x='Quell-Bereich',
+                        y='Anzahl Transporte',
+                        labels={'Quell-Bereich': 'Quell-Bereich', 'Anzahl Transporte': 'Anzahl der Transporte'},
+                        title="Anzahl der Transporte pro Quellbereich"
+                    )
+                    fig_balken_quell.update_layout(width=800, height=500)
+                    st.plotly_chart(fig_balken_quell)
+    
+                # Berechnung der Gesamtanzahl der Transporte
+                gesamt_transporte = df3.shape[0]
+                df3['Transportdauer'] = (df3['Ende Zeit'] - df3['Fahrbeginn Zeit']).dt.total_seconds() / 60
+                gesamt_transportdauer = df3['Transportdauer'].sum()
+                durchschnitt_dauer = gesamt_transporte / gesamt_transportdauer if gesamt_transportdauer > 0 else 0
+                gesamt_gewicht = df3['Gewicht'].sum()
+    
+                # Zeige die Kennzahlen als Labels an
+                col3, col4, col5 = st.columns(3)
+                col3.metric(label="Gesamtanzahl der Transporte", value=f"{gesamt_transporte}")
+                col4.metric(label="Durchschnittliche Transportdauer", value=f"{durchschnitt_dauer:.2f} Minuten")
+                col5.metric(label="Gesamtgewicht transportiert", value=f"{gesamt_gewicht:.2f} kg")
+    
+                # Zeige den Data Preview für Tab 3 an
+                with st.expander("Data Preview für Dashboard 3"):
+                    st.dataframe(df3)
 with tab4:
     st.subheader("Dashboard 4 - Preistabelle Visualisierung")
 
