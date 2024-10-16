@@ -73,7 +73,7 @@ def load_data(file):
 uploaded_file = st.sidebar.file_uploader("Choose a file")
 
 if uploaded_file is None:
-    st.info("Upload a file through config", icon="i")
+    st.info("Upload a file through config")
     st.stop()
 
 # Lade die Daten
@@ -211,7 +211,7 @@ with tab2:
     uploaded_file_2 = st.file_uploader("Wähle eine Datei für Dashboard 2", key="file2")
 
     if uploaded_file_2 is None:
-        st.info("Lade eine Datei für Dashboard 2 hoch", icon="ℹ️")
+        st.info("Lade eine Datei für Dashboard 2 hoch")
         st.stop()
 
     # Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
@@ -366,7 +366,7 @@ with tab3:
     uploaded_file_3 = st.file_uploader("Wähle eine Datei für Dashboard 3", key="file3")
 
     if uploaded_file_3 is None:
-        st.info("Lade eine Datei für Dashboard 3 hoch", icon="ℹ️")
+        st.info("Lade eine Datei für Dashboard 3 hoch")
         st.stop()
 
     # Lade die Daten für Dashboard 3 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
@@ -521,7 +521,7 @@ with tab4:
     uploaded_file_4 = st.file_uploader("Wähle eine Preistabelle-Datei für Dashboard 4", key="file4")
 
     if uploaded_file_4 is None:
-        st.info("Lade eine Datei für Dashboard 4 hoch", icon="ℹ️")
+        st.info("Lade eine Datei für Dashboard 4 hoch")
         st.stop()
 
     # Lade die Preisdaten ab der ersten Zeile (keine Zeilen überspringen)
@@ -594,7 +594,7 @@ with tab4:
         df_bestpreis.to_excel(writer, index=False, sheet_name='Bestpreisliste')
 
         # Speichere den Writer
-        writer.save()
+        writer.close()
 
         # Lade die erstellte Excel-Datei
         output.seek(0)
