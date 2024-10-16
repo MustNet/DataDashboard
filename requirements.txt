@@ -4,4 +4,3 @@ duckdb
 plotly.express
 plotly
 openpyxl
-io
