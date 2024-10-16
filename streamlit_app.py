@@ -66,6 +66,7 @@ def load_data(file):
     
     # Excel-Datei mit den angegebenen Konvertierungen laden
     data = pd.read_excel(file, converters=converters)
+    data.columns = data.columns.str.strip()
     data = data.drop(index=0).reset_index(drop=True)
     data['Liefer-Dat.'] = pd.to_datetime(data['Liefer-Dat.'], errors='coerce')
     data['Zustand'] = data['Zustand'].map(zustand_mapping)
