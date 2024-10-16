@@ -10,6 +10,21 @@ from io import BytesIO
 st.set_page_config(layout="wide")
 st.title("Dashboard Logistics Data")
 
+# URLs zu den Dateien im GitHub-Repository
+url_dashboard1 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Auftragsübersicht.xlsx"
+url_dashboard2 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Fahrposition.xlsx"
+url_dashboard3 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Transporte.xlsx"
+url_dashboard4 = "https://raw.githubusercontent.com/MustNet/DataDashboard/main/Speditionspreise.xlsx"
+
+# Funktion zum Herunterladen einer Datei von einer URL
+def download_file_from_url(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        return BytesIO(response.content)
+    else:
+        st.error(f"Fehler beim Herunterladen der Datei von {url}. Statuscode: {response.status_code}")
+        return None
+
 # Mapping der Statuscodes zu Statusmeldungen
 zustand_mapping = {
     10: 'An Lvs Übertragen',
@@ -50,42 +65,14 @@ def load_data(file):
     
     # Excel-Datei mit den angegebenen Konvertierungen laden
     data = pd.read_excel(file, converters=converters)
-    
-    # Lösche die erste Zeile ohne Prüfung
     data = data.drop(index=0).reset_index(drop=True)
-    
-    # Konvertiere die Spalte "Liefer-Dat." zu einem Datumsformat
     data['Liefer-Dat.'] = pd.to_datetime(data['Liefer-Dat.'], errors='coerce')
-    
-    # Mapping der Statusmeldungen auf die Zustände
     data['Zustand'] = data['Zustand'].map(zustand_mapping)
-
-    # Ungemappte Zustände als "Unbekannt" markieren
     data['Zustand'].fillna('Unbekannt', inplace=True)
-
-    # Erstelle neue Spalten für Jahr und Monat
     data['Jahr'] = data['Liefer-Dat.'].dt.year.astype(str)  # Jahr als String
     data['Monat'] = data['Liefer-Dat.'].dt.strftime('%b')  # Kürzel für den Monat (Jan, Feb, etc.)
     data['Monat_Zahl'] = data['Liefer-Dat.'].dt.month  # Monat als Zahl für die Sortierung
-    
     return data
-
-uploaded_file = st.sidebar.file_uploader("Choose a file")
-
-if uploaded_file is None:
-    st.info("Upload a file through config")
-    st.stop()
-
-# Lade die Daten
-df = load_data(uploaded_file)
-
-# Zeige eine Warnung für ungemappte Zustände
-ungemappt = df[df['Zustand'] == 'Unbekannt'].shape[0]
-if ungemappt > 0:
-    st.warning(f"Es gibt {ungemappt} Aufträge mit ungemappten Zuständen. Bitte überprüfe das Zustand-Mapping.")
-
-# DuckDB SQL-Integration
-conn = duckdb.connect()
 
 # Tabs für verschiedene Dashboards
 tab1, tab2, tab3, tab4= st.tabs(["Dashboard 1", "Dashboard 2","Dashboard 3", "Dashboard 4"])
@@ -93,8 +80,11 @@ tab1, tab2, tab3, tab4= st.tabs(["Dashboard 1", "Dashboard 2","Dashboard 3", "Da
 # Inhalt des ersten Tabs
 with tab1:
     st.subheader("Dashboard 1 - Auftragsübersicht_xlsx")
-    
-    # Filter für das Liniendiagramm (keine Zustandsfilterung)
+    # Datei automatisch von URL herunterladen
+    file_dashboard1 = download_file_from_url(url_dashboard1)
+    # Datei-Upload zur Bestätigung durch den Benutzer
+    uploaded_file_1 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 1", type=["xlsx"], key="file1", value=file_dashboard1)
+
     with st.sidebar:
         jahr_auswahl = st.selectbox("Wähle das Jahr", options=df["Jahr"].unique())
         monate_dict = {'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04', 'May': '05', 'Jun': '06', 
@@ -207,12 +197,11 @@ with tab1:
 with tab2:
     st.subheader("Dashboard 2 - Fahrpositionen_xlsx")
 
-    # File Uploader für Dashboard 2
-    uploaded_file_2 = st.file_uploader("Wähle eine Datei für Dashboard 2", key="file2")
+    # Datei automatisch von URL herunterladen
+    file_dashboard2 = download_file_from_url(url_dashboard2)
 
-    if uploaded_file_2 is None:
-        st.info("Lade eine Datei für Dashboard 2 hoch")
-        st.stop()
+    # Datei-Upload zur Bestätigung durch den Benutzer
+    uploaded_file_2 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 2", type=["xlsx"], key="file2", value=file_dashboard2)
 
     # Lade die Daten für Dashboard 2 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
     @st.cache_data
@@ -362,12 +351,11 @@ with tab2:
 with tab3:
     st.subheader("Dashboard 3 - Transporte_xlsx")
 
-    # File Uploader für Dashboard 3
-    uploaded_file_3 = st.file_uploader("Wähle eine Datei für Dashboard 3", key="file3")
+    # Datei automatisch von URL herunterladen
+    file_dashboard3 = download_file_from_url(url_dashboard3)
 
-    if uploaded_file_3 is None:
-        st.info("Lade eine Datei für Dashboard 3 hoch")
-        st.stop()
+    # Datei-Upload zur Bestätigung durch den Benutzer
+    uploaded_file_3 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 3", type=["xlsx"], key="file3", value=file_dashboard3)
 
     # Lade die Daten für Dashboard 3 (nur die Datei hochladen und keine weiteren Veränderungen vornehmen)
     @st.cache_data
@@ -517,12 +505,11 @@ with tab3:
 with tab4:
     st.subheader("Dashboard 4 - Preistabelle Visualisierung")
 
-    # File Uploader für Dashboard 4
-    uploaded_file_4 = st.file_uploader("Wähle eine Preistabelle-Datei für Dashboard 4", key="file4")
+    # Datei automatisch von URL herunterladen
+    file_dashboard4 = download_file_from_url(url_dashboard4)
 
-    if uploaded_file_4 is None:
-        st.info("Lade eine Datei für Dashboard 4 hoch")
-        st.stop()
+    # Datei-Upload zur Bestätigung durch den Benutzer
+    uploaded_file_4 = st.file_uploader("Bestätigen Sie die Datei für Dashboard 4", type=["xlsx"], key="file4", value=file_dashboard4)
 
     # Lade die Preisdaten ab der ersten Zeile (keine Zeilen überspringen)
     @st.cache_data
