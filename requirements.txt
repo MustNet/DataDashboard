@@ -4,5 +4,4 @@ duckdb
 plotly.express
 plotly
 openpyxl
-openpyxl.styles
 io
