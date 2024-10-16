@@ -208,7 +208,7 @@ with tab1:
 
 
 with tab2:
-    st.subheader("Dashboard 2 - Fahrpositionen_xlsx")
+    st.subheader("Dashboard 2 - Fahrposition_xlsx")
 
     # Datei automatisch von URL herunterladen
     file_dashboard2 = download_file_from_url(url_dashboard2)
@@ -233,21 +233,14 @@ with tab2:
 
         # Excel-Datei mit den angegebenen Konvertierungen laden
         data = pd.read_excel(file, converters=converters)
-        
-        # Entferne führende und nachfolgende Leerzeichen von allen Spaltennamen
         data.columns = data.columns.str.strip()
-        
-        # Konvertiere "Ende Datum" in Datumsformat
         data['Ende Datum'] = pd.to_datetime(data['Ende Datum'], errors='coerce')
-        
-        # Konvertiere "Beginn Zeit" und "Ende Zeit" in Zeitformat für die Berechnung der Zeitdauer
         data['Beginn Zeit'] = pd.to_datetime(data['Beginn Zeit'], errors='coerce')
         data['Ende Zeit'] = pd.to_datetime(data['Ende Zeit'], errors='coerce')
-
         return data
 
     # Verwende die Funktion, um die Datei für Tab 2 zu laden
-    df2 = load_data_tab2(uploaded_file_2)
+    df2 = load_data_tab2(file_dashboard2)
 
     # Berechnung der Anzahl der "Gesamtpicks" und des "Gesamtgewichts" pro Personalnummer
     df2_grouped = df2.groupby('Pers.-Nr.').agg({
